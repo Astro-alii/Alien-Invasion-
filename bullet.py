@@ -16,7 +16,7 @@ class Bullet (Sprite):
     def update (self):
         self.bullet_y -= self.settings.bullet_speed 
         self.bullet_rect.y = self.bullet_y
-
+    # draw_bullet method is required because Bullet object is not an image 
     def draw_bullet (self):
         pygame.draw.rect(self.screen, self.settings.bullet_colour ,self.bullet_rect)
     

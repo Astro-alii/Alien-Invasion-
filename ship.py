@@ -23,15 +23,15 @@ class Ship ():
 
     def update (self):
         if self.moving_right:
-            if not self.ship_rect.right == self.screen_rect.right:
+            if not self.ship_rect.right >= self.screen_rect.right:
                 self.ship_rect.centerx += 3
-        if self.moving_left:
-            if not self.ship_rect.left == self.screen_rect.left:
+        if self.moving_left:                              
+            if not self.ship_rect.left <= self.screen_rect.left:
                 self.ship_rect.centerx -= 3
         if self.moving_down:
-            if not self.ship_rect.bottom == self.screen_rect.bottom:
+            if not self.ship_rect.bottom >= self.screen_rect.bottom:
                 self.ship_rect.bottom += 3
         if self.moving_up:
-            if not self.ship_rect.top == self.screen_rect.top:
-                self.ship_rect.bottom -=3
+            if not self.ship_rect.top <= self.screen_rect.top:
+                self.ship_rect.y -=3
         
