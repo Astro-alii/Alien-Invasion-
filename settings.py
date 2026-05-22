@@ -8,7 +8,7 @@ class Settings():
         self.height = self.screen.get_rect().height 
 
         pygame.display.set_caption ("Alien Invasion")
-        icon = pygame.image.load ("Images/alien.png")
+        icon = pygame.image.load ("Images/alien_icon.png")
         pygame.display.set_icon(icon)
         
         #Backgrounf Image setting
@@ -16,7 +16,7 @@ class Settings():
         self.bg_image = pygame.transform.scale(self.bg_image, (self.screen.get_rect().width , self.screen.get_rect().height))
         self.bg_image_rect = self.bg_image.get_rect()
         self.bg_image_rect.topleft = (0,0) 
-      #  self.screen_rect_bottomright = self.screen.get_rect().bottomright
+
         
         #Bullet settings
         self.bullet_width = 3
@@ -26,5 +26,7 @@ class Settings():
         self.bullets_allowed = 10
 
         #Aliens settings
-        self.alien_speed = 2
+        self.alien_speed = 5
+        self.fleet_drop_speed = 10
+        self.fleet_direction = 1
         

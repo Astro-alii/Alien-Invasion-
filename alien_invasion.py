@@ -89,14 +89,30 @@ class Alien_Invasion ():
             current_y += alien_height
 
     def _create_alien(self, x_position , y_position):
+        """Creates an instance of alien and adds to sprite group"""
         new_alien = Alien(self) 
         new_alien.x = x_position 
         new_alien.rect.left = x_position
         new_alien.rect.bottom = y_position
         self.aliens.add(new_alien)
+   
+    def _check_fleet_edges(self):
+        """Takes appropriate action if any alien has reched the edge"""
+        for alien in self.aliens:
+            if alien.check_edge():
+                self._change_fleet_direction()
+                break
+
+                
+    def _change_fleet_direction(self):
+        """Changes fleet direction if either edge is touched"""
+        for alien in self.aliens:
+            alien.rect.y += self.setting.fleet_drop_speed
+        self.setting.fleet_direction *= -1
     
     def _update_alien (self):
         """Moves the alien to right"""
+        self._check_fleet_edges()
         self.aliens.update()
 
 
