@@ -9,6 +9,7 @@ class Alien_Invasion ():
     def __init__ (self):
         self.setting = Settings()
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen.fill(self.setting.bg_colour)
         self.setting.width = self.screen.get_rect().width
         self.setting.height = self.screen.get_rect().height 
     
@@ -80,8 +81,14 @@ class Alien_Invasion ():
     def _create_fleet(self):
         """Create the fleet of aliens"""
         alien = Alien (self)
-        self.aliens.add(alien)
+        alien_width = alien.rect.width
 
+        current_x =alien_width * 0.3
+        while current_x < (self.screen.get_rect().width - 2.8*alien_width):
+            new_alien = Alien(self) 
+            new_alien.rect.left = current_x + alien_width
+            current_x = new_alien.rect.left
+            self.aliens.add(new_alien)
 
 
     def _update_bullet(self):
@@ -94,7 +101,7 @@ class Alien_Invasion ():
     
     def _update_screen (self):
         """Update the screen on each frame"""
-        self.screen.fill ((0,0,0))
+        self.screen.fill (self.setting.bg_colour)
         self.screen.blit(self.ship.ship,self.ship.ship_rect)
         for bullet in self.bullets:
             bullet.draw_bullet()

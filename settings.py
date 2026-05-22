@@ -5,7 +5,7 @@ class Settings():
         #Ship settings 
         self.width = 800
         self.height = 600
-        self.bg_colour = (0,0,0) 
+        self.bg_colour = (109,122,117) 
 
         #Bullet settings
         self.bullet_width = 3
