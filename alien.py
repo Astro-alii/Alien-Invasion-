@@ -1,11 +1,12 @@
 import pygame 
 from pygame.sprite import Sprite 
-
+import settings
 class Alien (Sprite):
     def __init__(self, game):
         super().__init__()
-        self.screen = game.screen 
         self.setting = game.setting
+        self.screen = game.setting.screen 
+        
 
         self.image = pygame.image.load("Images/aliens.png")
         self.image = pygame.transform.scale(self.image,(100,100))
@@ -15,3 +16,8 @@ class Alien (Sprite):
         self.rect.y = self.rect.height
 
         self.x = self.rect.x
+    
+    def update(self):
+        """Updates the alien location"""
+        self.x +=  self.setting.alien_speed 
+        self.rect.x = self.rect.x

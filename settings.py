@@ -1,19 +1,30 @@
 import pygame 
 import sys 
 class Settings():
-    def __init__(self):
-        #Ship settings 
-        self.width = 800
-        self.height = 600
-        self.bg_colour = (109,122,117) 
+    def __init__(self, game):
+        #screen_settings
+        self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN )
+        self.width = self.screen.get_rect().width
+        self.height = self.screen.get_rect().height 
 
+        pygame.display.set_caption ("Alien Invasion")
+        icon = pygame.image.load ("Images/alien.png")
+        pygame.display.set_icon(icon)
+        
+        #Backgrounf Image setting
+        self.bg_image = pygame.image.load("Images/spacebg.png")
+        self.bg_image = pygame.transform.scale(self.bg_image, (self.screen.get_rect().width , self.screen.get_rect().height))
+        self.bg_image_rect = self.bg_image.get_rect()
+        self.bg_image_rect.topleft = (0,0) 
+      #  self.screen_rect_bottomright = self.screen.get_rect().bottomright
+        
         #Bullet settings
         self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_colour = (0, 255, 0)
-        self.bullet_speed = 2.5
-        self.bullets_allowed = 3
+        self.bullet_speed = 15
+        self.bullets_allowed = 10
 
         #Aliens settings
-        self.alien_speed = 3
+        self.alien_speed = 2
         

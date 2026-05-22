@@ -1,9 +1,10 @@
 import pygame 
 from pygame.sprite import Sprite 
+import settings
 class Bullet (Sprite):
     def __init__(self, game):
         super().__init__()
-        self.screen = game.screen
+        self.screen = game.setting.screen
         self.settings = game.setting
         self.bullet_colour = self.settings.bullet_colour
          
@@ -15,9 +16,9 @@ class Bullet (Sprite):
 
     def update (self):
         self.bullet_y -= self.settings.bullet_speed 
-        self.bullet_rect.y = self.bullet_y
+        self.bullet_rect.y = int (self.bullet_y)
     # draw_bullet method is required because Bullet object is not an image 
-    def draw_bullet (self):
+    def draw (self):
         pygame.draw.rect(self.screen, self.settings.bullet_colour ,self.bullet_rect)
     
 

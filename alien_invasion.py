@@ -7,16 +7,7 @@ from alien import Alien
 
 class Alien_Invasion ():
     def __init__ (self):
-        self.setting = Settings()
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.screen.fill(self.setting.bg_colour)
-        self.setting.width = self.screen.get_rect().width
-        self.setting.height = self.screen.get_rect().height 
-    
-        self.screen.fill(self.setting.bg_colour)
-        pygame.display.set_caption ("Alien Invasion")
-        icon = pygame.image.load ("Images/alien.png")
-        pygame.display.set_icon(icon)
+        self.setting = Settings(self)
         #Ship object 
         self.ship = ship.Ship(self)
         #bullet SPRITE GROUP object 
@@ -35,6 +26,7 @@ class Alien_Invasion ():
             self._check_event() 
             self.ship.update()    
             self._update_bullet()
+            self._update_alien()
             self._update_screen()
             self.clock.tick(120) # Controls frames rate per second 
     
@@ -82,13 +74,30 @@ class Alien_Invasion ():
         """Create the fleet of aliens"""
         alien = Alien (self)
         alien_width = alien.rect.width
+        alien_height = alien.rect.height
+        current_x =alien_width * 2
+        current_y = alien_height * 2
+        while current_y < (self.setting.screen.get_rect().height * 0.6):
+            horizontal_fleet_set = False
+            while not horizontal_fleet_set:
+                if current_x < (self.setting.screen.get_rect().width - 2*alien_width):
+                    self._create_alien(current_x , current_y)
+                    current_x += alien_width * 2
+                else: 
+                    horizontal_fleet_set = True
+                    current_x = alien_width * 2  
+            current_y += alien_height
 
-        current_x =alien_width * 0.3
-        while current_x < (self.screen.get_rect().width - 2.8*alien_width):
-            new_alien = Alien(self) 
-            new_alien.rect.left = current_x + alien_width
-            current_x = new_alien.rect.left
-            self.aliens.add(new_alien)
+    def _create_alien(self, x_position , y_position):
+        new_alien = Alien(self) 
+        new_alien.x = x_position 
+        new_alien.rect.left = x_position
+        new_alien.rect.bottom = y_position
+        self.aliens.add(new_alien)
+    
+    def _update_alien (self):
+        """Moves the alien to right"""
+        self.aliens.update()
 
 
     def _update_bullet(self):
@@ -99,13 +108,14 @@ class Alien_Invasion ():
                 self.bullets.remove(bullet)
 
     
-    def _update_screen (self):
+    def _update_screen (self): 
         """Update the screen on each frame"""
-        self.screen.fill (self.setting.bg_colour)
-        self.screen.blit(self.ship.ship,self.ship.ship_rect)
+        self.setting.screen.fill ((0,0,0))
+        self.setting.screen.blit(self.setting.bg_image, self.setting.bg_image_rect)
+        self.setting.screen.blit(self.ship.ship,self.ship.ship_rect)
         for bullet in self.bullets:
-            bullet.draw_bullet()
-        self.aliens.draw(self.screen)
+            bullet.draw()
+        self.aliens.draw(self.setting.screen)
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
 
 if __name__ == "__main__":

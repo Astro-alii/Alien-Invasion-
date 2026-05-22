@@ -1,11 +1,11 @@
 import pygame 
 import sys 
-
+import settings
 class Ship ():
     def __init__(self, game):
         self.game = game 
-
-        self.screen = game.screen 
+        self.setting = game.setting
+        self.screen = game.setting.screen 
         self.screen_rect = self.screen.get_rect()
         
 
