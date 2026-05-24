@@ -149,7 +149,7 @@ class Alien_Invasion ():
             bullet.draw()
         self.aliens.draw(self.setting.screen)
         for powerstrike in self.powerstrikes:
-            self.setting.screen.blit(powerstrike , powerstrike.rect)
+            self.setting.screen.blit(powerstrike.image , powerstrike.rect)
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
 
 if __name__ == "__main__":
