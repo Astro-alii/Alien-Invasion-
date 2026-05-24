@@ -25,6 +25,12 @@ class Settings():
         self.bullet_speed = 15
         self.bullets_allowed = 10
 
+        #Powerstrike settings
+        self.ps_width = 40 
+        self.ps_height = 40
+        self.ps_speed = 5
+        self.ps_allowed = 3
+
         #Aliens settings
         self.alien_speed = 5
         self.fleet_drop_speed = 10

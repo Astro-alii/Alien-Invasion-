@@ -4,7 +4,7 @@ import ship
 from settings import Settings
 import bullet 
 from alien import Alien 
-
+from powerstrike import Powerstrike
 class Alien_Invasion ():
     def __init__ (self):
         self.setting = Settings(self)
@@ -12,10 +12,11 @@ class Alien_Invasion ():
         self.ship = ship.Ship(self)
         #bullet SPRITE GROUP object 
         self.bullets = pygame.sprite.Group()
+        #Powerstrike SPRITE GROUP object 
+        self.powerstrikes = pygame.sprite.Group()
         #aliens object and sprite object 
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
-
         #Fps controller
         self.clock = pygame.time.Clock()
         
@@ -26,6 +27,7 @@ class Alien_Invasion ():
             self._check_event() 
             self.ship.update()    
             self._update_bullet()
+            self._update_powerstrike()
             self._update_alien()
             self._update_screen()
             self.clock.tick(120) # Controls frames rate per second 
@@ -51,6 +53,10 @@ class Alien_Invasion ():
             self.ship.moving_left = True 
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = True
+        if event.key == pygame.K_z:
+             if len(self.powerstrikes) < self.setting.ps_allowed:
+                ps_shot = Powerstrike(self)
+                self.powerstrikes.add(ps_shot)
         if event.key == pygame.K_SPACE:
             if len(self.bullets) < self.setting.bullets_allowed:
                 bullet_shot = bullet.Bullet(self)
@@ -87,6 +93,13 @@ class Alien_Invasion ():
                     horizontal_fleet_set = True
                     current_x = alien_width * 2  
             current_y += alien_height
+    
+    def _check_fleet_edges(self):
+        """Takes appropriate action if any alien has reched the edge"""
+        for alien in self.aliens:
+            if alien.check_edge():
+                self._change_fleet_direction()
+                break
 
     def _create_alien(self, x_position , y_position):
         """Creates an instance of alien and adds to sprite group"""
@@ -96,13 +109,6 @@ class Alien_Invasion ():
         new_alien.rect.bottom = y_position
         self.aliens.add(new_alien)
    
-    def _check_fleet_edges(self):
-        """Takes appropriate action if any alien has reched the edge"""
-        for alien in self.aliens:
-            if alien.check_edge():
-                self._change_fleet_direction()
-                break
-
                 
     def _change_fleet_direction(self):
         """Changes fleet direction if either edge is touched"""
@@ -114,16 +120,26 @@ class Alien_Invasion ():
         """Moves the alien to right"""
         self._check_fleet_edges()
         self.aliens.update()
-
+        pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
 
     def _update_bullet(self):
         """Remove bullets on top and manage total bullets allowed"""
         self.bullets.update()
         for bullet in self.bullets.copy(): #deletes bullet after reaching top 
-            if bullet.bullet_rect.y <= 0:
+            if bullet.rect.y <= 0:
                 self.bullets.remove(bullet)
-
+        pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
     
+    def _update_powerstrike(self):
+        """Remove bullets on top and manage total bullets allowed"""
+        self.powerstrikes.update()
+        for powerstrike in self.powerstrikes.copy(): #deletes bullet after reaching top 
+            if powerstrike.rect.y <= 0:
+                self.powerstrikes.remove(powerstrike)
+        pygame.sprite.groupcollide(self.aliens , self.powerstrikes, True, False)
+        
+        
+
     def _update_screen (self): 
         """Update the screen on each frame"""
         self.setting.screen.fill ((0,0,0))
@@ -132,6 +148,8 @@ class Alien_Invasion ():
         for bullet in self.bullets:
             bullet.draw()
         self.aliens.draw(self.setting.screen)
+        for powerstrike in self.powerstrikes:
+            self.setting.screen.blit(powerstrike , powerstrike.rect)
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
 
 if __name__ == "__main__":
