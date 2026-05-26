@@ -147,7 +147,10 @@ class Alien_Invasion ():
         self.setting.screen.blit(self.ship.ship,self.ship.ship_rect)
         for bullet in self.bullets:
             bullet.draw()
+        if len(self.aliens) <= 0:
+            self._create_fleet()
         self.aliens.draw(self.setting.screen)
+        
         for powerstrike in self.powerstrikes:
             self.setting.screen.blit(powerstrike.image , powerstrike.rect)
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
