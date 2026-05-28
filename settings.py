@@ -23,13 +23,13 @@ class Settings():
         self.bullet_height = 15
         self.bullet_colour = (0, 255, 0)
         self.bullet_speed = 15
-        self.bullets_allowed = 10
+        self.bullets_allowed = 2
 
         #Powerstrike settings
         self.ps_width = 40 
         self.ps_height = 40
         self.ps_speed = 5
-        self.ps_allowed = 3
+        self.ps_allowed = 1
 
         #Aliens settings
         self.alien_speed = 5

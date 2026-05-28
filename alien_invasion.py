@@ -109,7 +109,7 @@ class Alien_Invasion ():
         new_alien.rect.bottom = y_position
         self.aliens.add(new_alien)
    
-                
+          
     def _change_fleet_direction(self):
         """Changes fleet direction if either edge is touched"""
         for alien in self.aliens:
@@ -121,6 +121,8 @@ class Alien_Invasion ():
         self._check_fleet_edges()
         self.aliens.update()
         pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            print ("Ship Hit")
 
     def _update_bullet(self):
         """Remove bullets on top and manage total bullets allowed"""
@@ -128,29 +130,38 @@ class Alien_Invasion ():
         for bullet in self.bullets.copy(): #deletes bullet after reaching top 
             if bullet.rect.y <= 0:
                 self.bullets.remove(bullet)
-        pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
-    
+        self._check_alien_bullet_collision()
+        if len(self.aliens) <= 0:
+            self._create_fleet()
+        
     def _update_powerstrike(self):
         """Remove bullets on top and manage total bullets allowed"""
         self.powerstrikes.update()
         for powerstrike in self.powerstrikes.copy(): #deletes bullet after reaching top 
             if powerstrike.rect.y <= 0:
                 self.powerstrikes.remove(powerstrike)
-        pygame.sprite.groupcollide(self.aliens , self.powerstrikes, True, False)
-        
-        
+        self._check_alien_pw_collision()
+    
+    def _check_alien_bullet_collision(self):
+        """Checks collsions between alien and fired bullet"""
+        pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
+   
+    def _check_alien_pw_collision(self):
+        """Checks collisions between aliens and powerstrike"""
+        pygame.sprite.groupcollide(self.aliens, self.powerstrikes, True , False)
+    
+    def _check_alien_ship_collision(self):
+        """Checks Collisions between alien and ship"""
+        pygame.sprite.groupcollide(self.aliens , self.ship , False , True)
 
     def _update_screen (self): 
         """Update the screen on each frame"""
         self.setting.screen.fill ((0,0,0))
         self.setting.screen.blit(self.setting.bg_image, self.setting.bg_image_rect)
-        self.setting.screen.blit(self.ship.ship,self.ship.ship_rect)
+        self.setting.screen.blit(self.ship.ship,self.ship.rect)
         for bullet in self.bullets:
             bullet.draw()
-        if len(self.aliens) <= 0:
-            self._create_fleet()
         self.aliens.draw(self.setting.screen)
-        
         for powerstrike in self.powerstrikes:
             self.setting.screen.blit(powerstrike.image , powerstrike.rect)
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  

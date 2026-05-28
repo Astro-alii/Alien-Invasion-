@@ -10,7 +10,7 @@ class Bullet (Sprite):
          
         self.rect = pygame.Rect(0, 0 , self.settings.bullet_width , 
                                        self.settings.bullet_height)
-        self.rect.midtop = game.ship.ship_rect.midtop
+        self.rect.midtop = game.ship.rect.midtop
 
         self.bullet_y = float (self.rect.y) # Use to adjust bullet speed - increment or decrement
         

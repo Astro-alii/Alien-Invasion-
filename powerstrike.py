@@ -10,7 +10,7 @@ class Powerstrike(Sprite):
         self.image = pygame.image.load("Images/Powerstrike.png")
         self.image = pygame.transform.scale(self.image , (self.settings.ps_width, self.settings.ps_height))
         self.rect = self.image.get_rect()
-        self.rect.midtop = game.ship.ship_rect.midtop
+        self.rect.midtop = game.ship.rect.midtop
 
     
     def update(self):
