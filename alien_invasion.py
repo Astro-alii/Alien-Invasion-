@@ -5,11 +5,15 @@ from settings import Settings
 import bullet 
 from alien import Alien 
 from powerstrike import Powerstrike
+from gamestats import Gamestats
+from time import sleep
 class Alien_Invasion ():
     def __init__ (self):
         self.setting = Settings(self)
         #Ship object 
         self.ship = ship.Ship(self)
+        #Game stats object
+        self.stats = Gamestats(self)
         #bullet SPRITE GROUP object 
         self.bullets = pygame.sprite.Group()
         #Powerstrike SPRITE GROUP object 
@@ -122,8 +126,26 @@ class Alien_Invasion ():
         self.aliens.update()
         pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print ("Ship Hit")
+            if self.stats.ship_left > 1:
+                self._ship_hit()
+            else:
+                print ("you lost")
+                sys.exit()
+                print ("you lost")
 
+    def _ship_hit (self):
+
+        self.stats.ship_left -= 1 
+
+        self.aliens.empty()
+        self.bullets.empty()
+
+        self._create_fleet()
+        self.ship.reset_ship()
+        
+        sleep(0.3)
+
+        
     def _update_bullet(self):
         """Remove bullets on top and manage total bullets allowed"""
         self.bullets.update()

@@ -14,6 +14,7 @@ class Ship ():
         self.ship = pygame.transform.scale(self.ship , (100 , 100 ))
         self.rect = self.ship.get_rect()
 
+        self.x = float(self.rect.x)
         self.rect.midbottom = self.screen_rect.midbottom
          
         self.moving_right = False
@@ -35,4 +36,7 @@ class Ship ():
         if self.moving_up:
             if not self.rect.top <= self.screen_rect.top:
                 self.rect.y -=3
-        
+    
+    def reset_ship(self):
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float (self.rect.x)
