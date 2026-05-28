@@ -4,6 +4,7 @@ class Settings():
     def __init__(self, game):
         #screen_settings
         self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN )
+        self.screen_rect = self.screen.get_rect()
         self.width = self.screen.get_rect().width
         self.height = self.screen.get_rect().height 
 
@@ -33,7 +34,7 @@ class Settings():
 
         #Aliens settings
         self.alien_speed = 5
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 50
         self.fleet_direction = 1
 
         #Ship settings

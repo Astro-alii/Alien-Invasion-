@@ -8,8 +8,12 @@ from powerstrike import Powerstrike
 from gamestats import Gamestats
 from time import sleep
 class Alien_Invasion ():
+
     def __init__ (self):
+        pygame.init()
         self.setting = Settings(self)
+        #font object
+        self.font = pygame.font.SysFont(None, 48)
         #Ship object 
         self.ship = ship.Ship(self)
         #Game stats object
@@ -23,7 +27,9 @@ class Alien_Invasion ():
         self._create_fleet()
         #Fps controller
         self.clock = pygame.time.Clock()
-        
+        self.game_end = False
+
+
     def run (self):
         """Main function to execute game flow"""
         running = True
@@ -35,7 +41,8 @@ class Alien_Invasion ():
             self._update_alien()
             self._update_screen()
             self.clock.tick(120) # Controls frames rate per second 
-    
+
+
     def _check_event (self):
         """Identify type of event"""
         for event in pygame.event.get():
@@ -80,6 +87,7 @@ class Alien_Invasion ():
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = False
 
+
     def _create_fleet(self):
         """Create the fleet of aliens"""
         alien = Alien (self)
@@ -97,13 +105,15 @@ class Alien_Invasion ():
                     horizontal_fleet_set = True
                     current_x = alien_width * 2  
             current_y += alien_height
-    
+
+
     def _check_fleet_edges(self):
         """Takes appropriate action if any alien has reched the edge"""
         for alien in self.aliens:
             if alien.check_edge():
                 self._change_fleet_direction()
                 break
+
 
     def _create_alien(self, x_position , y_position):
         """Creates an instance of alien and adds to sprite group"""
@@ -119,31 +129,28 @@ class Alien_Invasion ():
         for alien in self.aliens:
             alien.rect.y += self.setting.fleet_drop_speed
         self.setting.fleet_direction *= -1
-    
+
+
     def _update_alien (self):
         """Moves the alien to right"""
         self._check_fleet_edges()
         self.aliens.update()
-        pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
-        if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            if self.stats.ship_left > 1:
-                self._ship_hit()
-            else:
-                print ("you lost")
-                sys.exit()
-                print ("you lost")
+        self._check_alien_bullet_collision
+        self._check_alien_ship_collision()
+        self._check_alien_bottom() 
+
 
     def _ship_hit (self):
+        if self.stats.ship_left > 0:
+            self.stats.ship_left -= 1 
 
-        self.stats.ship_left -= 1 
+            self.aliens.empty()
+            self.bullets.empty()
 
-        self.aliens.empty()
-        self.bullets.empty()
-
-        self._create_fleet()
-        self.ship.reset_ship()
+            self._create_fleet()
+            self.ship.reset_ship()
+            sleep(0.3)
         
-        sleep(0.3)
 
         
     def _update_bullet(self):
@@ -155,7 +162,8 @@ class Alien_Invasion ():
         self._check_alien_bullet_collision()
         if len(self.aliens) <= 0:
             self._create_fleet()
-        
+
+
     def _update_powerstrike(self):
         """Remove bullets on top and manage total bullets allowed"""
         self.powerstrikes.update()
@@ -163,19 +171,35 @@ class Alien_Invasion ():
             if powerstrike.rect.y <= 0:
                 self.powerstrikes.remove(powerstrike)
         self._check_alien_pw_collision()
-    
+
+
     def _check_alien_bullet_collision(self):
         """Checks collsions between alien and fired bullet"""
         pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
    
+
     def _check_alien_pw_collision(self):
         """Checks collisions between aliens and powerstrike"""
         pygame.sprite.groupcollide(self.aliens, self.powerstrikes, True , False)
-    
+
+
     def _check_alien_ship_collision(self):
         """Checks Collisions between alien and ship"""
-        pygame.sprite.groupcollide(self.aliens , self.ship , False , True)
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            if self.setting.ship_limit > 0 :
+                 self._ship_hit() # Can implemenet game over after this
 
+    def _check_alien_bottom(self):
+        for alien in self.aliens:
+            if alien.rect.bottom >= self.setting.screen_rect.bottom and self.setting.ship_limit:
+                self._ship_hit()
+                break
+            
+    def _end_game(self):
+        
+        self.text = self.font.render("Game Over", True , (255,255,255))
+        self.setting.screen.blit(self.text, (self.setting.screen_rect.centerx , self.setting.screen_rect.centery))
+   
     def _update_screen (self): 
         """Update the screen on each frame"""
         self.setting.screen.fill ((0,0,0))
@@ -187,6 +211,7 @@ class Alien_Invasion ():
         for powerstrike in self.powerstrikes:
             self.setting.screen.blit(powerstrike.image , powerstrike.rect)
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
+
 
 if __name__ == "__main__":
     ai = Alien_Invasion()
