@@ -12,15 +12,17 @@ class Alien_Invasion ():
     def __init__ (self):
         pygame.init()
         self.setting = Settings(self)
+        #Gamestats object 
+        self.stats = Gamestats(self)
         #Button objects
         self.play_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery, 200, 75, "Play")
-        self.quit_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery +100 , 200 , 75 , "Quit") 
+        self.quit_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery +100 , 200 , 75 , "Quit")
+        #Score display bar
+        self.score_bar = Button(self , self.setting.screen_rect.left , self.setting.screen_rect.top, 50, 25, "0", (0,255,0) ,(255,255,255))
         #font object
         self.font = pygame.font.SysFont(None, 48)
         #Ship object 
         self.ship = ship.Ship(self)
-        #Game stats object
-        self.stats = Gamestats(self)
         #bullet SPRITE GROUP object 
         self.bullets = pygame.sprite.Group()
         #Powerstrike SPRITE GROUP object 
@@ -31,7 +33,7 @@ class Alien_Invasion ():
         #Fps controller
         self.clock = pygame.time.Clock()
         self.game_over = True
-
+        self.game_lost = False
 
     def run (self):
         """Main function to execute game flow"""
@@ -103,6 +105,7 @@ class Alien_Invasion ():
         if event.button == 1:
             if self.play_button.get_cliked(event):
                 self.game_over = False
+               # pygame.mouse.set_visible(False)
             elif self.quit_button.get_cliked(event):
                 sys.exit() 
     def _create_fleet(self):
@@ -169,6 +172,7 @@ class Alien_Invasion ():
             sleep(0.3)
         else: 
             self.game_over = True
+            self.game_lost = True 
         
     def _update_bullet(self):
         """Remove bullets on top and manage total bullets allowed"""
@@ -192,7 +196,8 @@ class Alien_Invasion ():
 
     def _check_alien_bullet_collision(self):
         """Checks collsions between alien and fired bullet"""
-        pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
+        hits = len(pygame.sprite.groupcollide(self.aliens , self.bullets, True, True))
+        
    
 
     def _check_alien_pw_collision(self):
@@ -204,19 +209,18 @@ class Alien_Invasion ():
         """Checks Collisions between alien and ship"""
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             if self.setting.ship_limit > 0 :
-                 self._ship_hit() # Can implemenet game over after this
+                 self._ship_hit() 
 
     def _check_alien_bottom(self):
+        """Checks weather alien has reached bottom"""
         for alien in self.aliens:
             if alien.rect.bottom >= self.setting.screen_rect.bottom and self.setting.ship_limit:
                 self._ship_hit()
                 break
             
-    def _end_game(self):
-        
-        self.text = self.font.render("Game Over!", True , (255,255,255))
-        self.setting.screen.blit(self.text, (self.setting.screen_rect.centerx -100 , self.setting.screen_rect.centery))
-   
+    
+    
+
     def _update_screen (self): 
         """Update the screen on each frame"""
         self.setting.screen.fill ((0,0,0))
@@ -225,6 +229,15 @@ class Alien_Invasion ():
             self.play_button.draw()
             self.quit_button.draw()
             self._create_intro()
+            self.aliens.empty()
+            self.bullets.empty()
+            self.ship.rect.midbottom = self.setting.screen_rect.midbottom
+            self.stats.reset_stats()
+        elif self.game_lost: # Make a complete end page, like intro page 
+            self.play_again_button()
+            self.you_lost_msg()
+            self.display_score()
+            self.display_level()
         elif not self.game_over:
             self.setting.screen.blit(self.ship.ship,self.ship.rect)
             for bullet in self.bullets:
@@ -232,6 +245,7 @@ class Alien_Invasion ():
             self.aliens.draw(self.setting.screen)
             for powerstrike in self.powerstrikes:
                 self.setting.screen.blit(powerstrike.image , powerstrike.rect)
+        
         
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
 
