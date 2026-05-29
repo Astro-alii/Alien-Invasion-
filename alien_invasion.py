@@ -1,6 +1,7 @@
 import sys
 import pygame 
 import ship 
+from button import Button
 from settings import Settings
 import bullet 
 from alien import Alien 
@@ -12,6 +13,8 @@ class Alien_Invasion ():
     def __init__ (self):
         pygame.init()
         self.setting = Settings(self)
+        #Button object
+        self.play_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery, 200, 75, "Play")
         #font object
         self.font = pygame.font.SysFont(None, 48)
         #Ship object 
@@ -27,7 +30,7 @@ class Alien_Invasion ():
         self._create_fleet()
         #Fps controller
         self.clock = pygame.time.Clock()
-        self.game_end = False
+        self.game_over = True
 
 
     def run (self):
@@ -35,10 +38,11 @@ class Alien_Invasion ():
         running = True
         while running:
             self._check_event() 
-            self.ship.update()    
-            self._update_bullet()
-            self._update_powerstrike()
-            self._update_alien()
+            if not self.game_over:
+                self.ship.update()    
+                self._update_bullet()
+                self._update_powerstrike()
+                self._update_alien()
             self._update_screen()
             self.clock.tick(120) # Controls frames rate per second 
 
@@ -48,6 +52,8 @@ class Alien_Invasion ():
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    self.MOUSEBUTTONDOWN_events(event)
                 elif event.type == pygame.KEYDOWN:
                     self.KEYDOWN_events(event)
                 elif event.type == pygame.KEYUP:
@@ -87,7 +93,10 @@ class Alien_Invasion ():
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = False
 
-
+    def MOUSEBUTTONDOWN_events(self,event):
+        if event.button == 1:
+            if self.play_button.get_cliked:
+                self.game_over = False
     def _create_fleet(self):
         """Create the fleet of aliens"""
         alien = Alien (self)
@@ -141,7 +150,7 @@ class Alien_Invasion ():
 
 
     def _ship_hit (self):
-        if self.stats.ship_left > 0:
+        if self.stats.ship_left > 1:
             self.stats.ship_left -= 1 
 
             self.aliens.empty()
@@ -150,8 +159,8 @@ class Alien_Invasion ():
             self._create_fleet()
             self.ship.reset_ship()
             sleep(0.3)
-        
-
+        else: 
+            self.game_over = True
         
     def _update_bullet(self):
         """Remove bullets on top and manage total bullets allowed"""
@@ -197,19 +206,23 @@ class Alien_Invasion ():
             
     def _end_game(self):
         
-        self.text = self.font.render("Game Over", True , (255,255,255))
-        self.setting.screen.blit(self.text, (self.setting.screen_rect.centerx , self.setting.screen_rect.centery))
+        self.text = self.font.render("Game Over!", True , (255,255,255))
+        self.setting.screen.blit(self.text, (self.setting.screen_rect.centerx -100 , self.setting.screen_rect.centery))
    
     def _update_screen (self): 
         """Update the screen on each frame"""
         self.setting.screen.fill ((0,0,0))
         self.setting.screen.blit(self.setting.bg_image, self.setting.bg_image_rect)
-        self.setting.screen.blit(self.ship.ship,self.ship.rect)
-        for bullet in self.bullets:
-            bullet.draw()
-        self.aliens.draw(self.setting.screen)
-        for powerstrike in self.powerstrikes:
-            self.setting.screen.blit(powerstrike.image , powerstrike.rect)
+        if self.game_over:
+            self.play_button.draw()
+        elif not self.game_over:
+            self.setting.screen.blit(self.ship.ship,self.ship.rect)
+            for bullet in self.bullets:
+                bullet.draw()
+            self.aliens.draw(self.setting.screen)
+            for powerstrike in self.powerstrikes:
+                self.setting.screen.blit(powerstrike.image , powerstrike.rect)
+        
         pygame.display.flip() #display.update is more usefull--> can Update specified parts  
 
 
