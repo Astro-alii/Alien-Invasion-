@@ -9,12 +9,12 @@ from powerstrike import Powerstrike
 from gamestats import Gamestats
 from time import sleep
 class Alien_Invasion ():
-
     def __init__ (self):
         pygame.init()
         self.setting = Settings(self)
-        #Button object
+        #Button objects
         self.play_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery, 200, 75, "Play")
+        self.quit_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery +100 , 200 , 75 , "Quit") 
         #font object
         self.font = pygame.font.SysFont(None, 48)
         #Ship object 
@@ -59,7 +59,13 @@ class Alien_Invasion ():
                 elif event.type == pygame.KEYUP:
                     self.KEYUP_events(event)
 
-
+    def _create_intro(self):
+        self.heading_alien  = pygame.font.SysFont("ariel", 150)
+        self.heading_invasion = pygame.font.SysFont("ariel", 150)
+        self.text_alien = self.heading_alien.render("Alien", True , (110, 0 , 217))
+        self.text_invasion = self.heading_invasion.render("Invasion", True , (110, 0 ,217))
+        self.setting.screen.blit(self.text_alien , (self.setting.screen_rect.centerx -125, self.setting.screen_rect.centery - 300))
+        self.setting.screen.blit(self.text_invasion, (self.setting.screen_rect.centerx-200  , self.setting.screen_rect.centery -200 ))
     def KEYDOWN_events(self, event):
         """Button press response"""
         if event.key == pygame.K_UP:
@@ -95,8 +101,10 @@ class Alien_Invasion ():
 
     def MOUSEBUTTONDOWN_events(self,event):
         if event.button == 1:
-            if self.play_button.get_cliked:
+            if self.play_button.get_cliked(event):
                 self.game_over = False
+            elif self.quit_button.get_cliked(event):
+                sys.exit() 
     def _create_fleet(self):
         """Create the fleet of aliens"""
         alien = Alien (self)
@@ -215,6 +223,8 @@ class Alien_Invasion ():
         self.setting.screen.blit(self.setting.bg_image, self.setting.bg_image_rect)
         if self.game_over:
             self.play_button.draw()
+            self.quit_button.draw()
+            self._create_intro()
         elif not self.game_over:
             self.setting.screen.blit(self.ship.ship,self.ship.rect)
             for bullet in self.bullets:
