@@ -37,6 +37,18 @@ class Settings():
         self.fleet_drop_speed = 10
         self.fleet_direction = 1
 
+        #new level speed multiplier
+        self.speed_increase = 1.1
         #Ship settings
         self.ship_limit = 3
+    def initialize_settings(self):
+        self.alien_speed = 5
+        self.bullet_speed = 15
+        self.ps_speed = 5
+
+    def new_level_settings(self):
+        self.alien_speed *= self.speed_increase
+        self.bullet_speed *= self.speed_increase
+        self.ps_speed *= self.speed_increase
+
         

@@ -30,17 +30,21 @@ class Alien_Invasion ():
         #aliens object and sprite object 
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        #Simulating levelling
+        self.current_level = 1
+
         #Fps controller
         self.clock = pygame.time.Clock()
-        self.game_over = True
-        self.game_lost = False
+        self.game_not_started = True
+        self.game_end = False 
+        
 
     def run (self):
         """Main function to execute game flow"""
         running = True
         while running:
             self._check_event() 
-            if not self.game_over:
+            if not self.game_not_started:
                 self.ship.update()    
                 self._update_bullet()
                 self._update_powerstrike()
@@ -61,7 +65,7 @@ class Alien_Invasion ():
                 elif event.type == pygame.KEYUP:
                     self.KEYUP_events(event)
 
-    def _create_intro(self):
+    def _create_intro_page(self):
         self.heading_alien  = pygame.font.SysFont("ariel", 150)
         self.heading_invasion = pygame.font.SysFont("ariel", 150)
         self.text_alien = self.heading_alien.render("Alien", True , (110, 0 , 217))
@@ -104,7 +108,7 @@ class Alien_Invasion ():
     def MOUSEBUTTONDOWN_events(self,event):
         if event.button == 1:
             if self.play_button.get_cliked(event):
-                self.game_over = False
+                self.game_not_started = False
                # pygame.mouse.set_visible(False)
             elif self.quit_button.get_cliked(event):
                 sys.exit() 
@@ -171,8 +175,9 @@ class Alien_Invasion ():
             self.ship.reset_ship()
             sleep(0.3)
         else: 
-            self.game_over = True
-            self.game_lost = True 
+            self.game_not_started = True
+            self.game_end = True
+
         
     def _update_bullet(self):
         """Remove bullets on top and manage total bullets allowed"""
@@ -182,6 +187,7 @@ class Alien_Invasion ():
                 self.bullets.remove(bullet)
         self._check_alien_bullet_collision()
         if len(self.aliens) <= 0:
+            self.setting.new_level_settings()
             self._create_fleet()
 
 
@@ -217,28 +223,23 @@ class Alien_Invasion ():
             if alien.rect.bottom >= self.setting.screen_rect.bottom and self.setting.ship_limit:
                 self._ship_hit()
                 break
-            
+    def _update_level(self):
+        self.level.upgrade_level(self.current_level) 
     
-    
-
     def _update_screen (self): 
         """Update the screen on each frame"""
         self.setting.screen.fill ((0,0,0))
         self.setting.screen.blit(self.setting.bg_image, self.setting.bg_image_rect)
-        if self.game_over:
+        if self.game_not_started:
             self.play_button.draw()
             self.quit_button.draw()
-            self._create_intro()
+            self._create_intro_page()
             self.aliens.empty()
             self.bullets.empty()
             self.ship.rect.midbottom = self.setting.screen_rect.midbottom
             self.stats.reset_stats()
-        elif self.game_lost: # Make a complete end page, like intro page 
-            self.play_again_button()
-            self.you_lost_msg()
-            self.display_score()
-            self.display_level()
-        elif not self.game_over:
+            self.setting.initialize_settings()
+        elif not self.game_not_started:
             self.setting.screen.blit(self.ship.ship,self.ship.rect)
             for bullet in self.bullets:
                 bullet.draw()
