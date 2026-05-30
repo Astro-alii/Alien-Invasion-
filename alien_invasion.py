@@ -110,7 +110,7 @@ class Alien_Invasion ():
             if self.play_button.get_cliked(event):
                 self.game_not_started = False
                # pygame.mouse.set_visible(False)
-            elif self.quit_button.get_cliked(event):
+            elif self.quit_button.get_cliked(event) and self.game_not_started:
                 sys.exit() 
     def _create_fleet(self):
         """Create the fleet of aliens"""
