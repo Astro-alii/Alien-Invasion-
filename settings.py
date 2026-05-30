@@ -41,6 +41,8 @@ class Settings():
         self.speed_increase = 1.1
         #Ship settings
         self.ship_limit = 3
+        #Scoring
+        self.alien_points = 10
     def initialize_settings(self):
         self.alien_speed = 5
         self.bullet_speed = 15

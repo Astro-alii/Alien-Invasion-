@@ -7,6 +7,7 @@ import bullet
 from alien import Alien 
 from powerstrike import Powerstrike
 from gamestats import Gamestats
+from hud import HUD
 from time import sleep
 class Alien_Invasion ():
     def __init__ (self):
@@ -19,8 +20,8 @@ class Alien_Invasion ():
         self.quit_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery +100 , 200 , 75 , "Quit")
         #Button objects - Last page
         self.play_again_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery, 200, 75, "Play Again")
-        #Score display bar
-        self.score_bar = Button(self , self.setting.screen_rect.left , self.setting.screen_rect.top, 50, 25, "0", (0,255,0) ,(255,255,255))
+        #HUD display object
+        self.hud = HUD (self)
         #font object
         self.font = pygame.font.SysFont(None, 48)
         #Ship object 
@@ -131,6 +132,7 @@ class Alien_Invasion ():
                 self.game_start = True
                 self.game_end = False
                 self._initialize_game_startup()
+                self.hud.prep_score()
             if self.quit_button.get_clicked(event) and not self.game_start:
                 sys.exit() 
     
@@ -225,14 +227,21 @@ class Alien_Invasion ():
 
     def _check_alien_bullet_collision(self):
         """Checks collsions between alien and fired bullet"""
-        len(pygame.sprite.groupcollide(self.aliens , self.bullets, True, True))
+        collisions = pygame.sprite.groupcollide(self.aliens , self.bullets, True, True)
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.setting.alien_points * len (aliens)
+                self.hud.prep_score()
         
-   
 
     def _check_alien_pw_collision(self):
         """Checks collisions between aliens and powerstrike"""
-        pygame.sprite.groupcollide(self.aliens, self.powerstrikes, True , False)
+        collisions = pygame.sprite.groupcollide(self.aliens, self.powerstrikes, True , False)
 
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.setting.alien_points * len (aliens)
+                self.hud.prep_score()
 
     def _check_alien_ship_collision(self):
         """Checks Collisions between alien and ship"""
@@ -273,6 +282,7 @@ class Alien_Invasion ():
             self.aliens.draw(self.setting.screen)
             for powerstrike in self.powerstrikes:
                 self.setting.screen.blit(powerstrike.image , powerstrike.rect)
+            self.hud.show_score()
         elif self.game_end and not self.game_start:
             self._create_end_page()
         
