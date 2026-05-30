@@ -12,19 +12,21 @@ class Button():
         self.screenx = x
         self.screeny = y
 
-        self.rect = pygame.Rect(self.screenx,self.screeny, self.width , self.height)
+        self.button_rect = pygame.Rect(self.screenx,self.screeny, self.width , self.height)
 
         self.label = label
 
 
 
     def draw(self):
-        pygame.draw.rect(self.screen , self.bg_colour , self.rect )
+        pygame.draw.rect(self.screen , self.bg_colour , self.button_rect )
         self.font = pygame.font.SysFont(None , 38)
         self.text = self.font.render(self.label,True, self.font_colour)
-        self.screen.blit(self.text , (self.rect.centerx - self.width * 0.15, self.rect.centery - self.height * 0.175))
+        self.text_rect = self.text.get_rect()
+        self.text_rect.center = self.button_rect.center
+        self.screen.blit(self.text , self.text_rect)
 
-    def get_cliked(self , event):
+    def get_clicked(self , event):
         if event.button == 1 :
             x , y = event.pos
-            return self.rect.collidepoint(x,y)
+            return self.button_rect.collidepoint(x,y)
