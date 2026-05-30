@@ -74,11 +74,9 @@ class Alien_Invasion ():
         self.play_button.draw()
         self.quit_button.draw()
         self.heading_alien  = pygame.font.SysFont("ariel", 150)
-        self.heading_invasion = pygame.font.SysFont("ariel", 150)
-        self.text_alien = self.heading_alien.render("Alien", True , (110, 0 , 217))
-        self.text_invasion = self.heading_invasion.render("Invasion", True , (110, 0 ,217))
-        self.setting.screen.blit(self.text_alien , (self.setting.screen_rect.centerx -125, self.setting.screen_rect.centery - 300))
-        self.setting.screen.blit(self.text_invasion, (self.setting.screen_rect.centerx-200  , self.setting.screen_rect.centery -200 ))
+        self.text_alien_invasion = self.heading_alien.render("Alien Invasion", True , (0, 195, 255))
+        self.setting.screen.blit(self.text_alien_invasion , (self.setting.screen_rect.centerx -350, self.setting.screen_rect.centery - 200))
+       
 
     def _create_end_page (self):
         """Creates the end page when player runs out of ships"""
@@ -92,17 +90,18 @@ class Alien_Invasion ():
         self.current_score_val = pygame.font.SysFont(None , 50)
       
         #Text renders
-        self.text_game_over = self.heading_game_over.render("Game Over!" , True , (110,0,217))
-        self.text_current_score = self.current_score.render ("Current Score" ,True , (255, 0, 136))
-        self.text_high_score = self.high_score.render("High Score" , True , (255, 0, 136))
-        self.text_high_score_val = self.high_score_val.render(self.stats.get_highest_score() ,True ,(255, 0, 136))
-        self.text_current_score_val = self.current_score_val.render(str(self.stats.score) ,True ,(255, 0, 136))
+        self.text_game_over = self.heading_game_over.render("Game Over!" , True , (255, 240, 0))
+        self.text_current_score = self.current_score.render ("Current Score:" ,True , (255, 0, 136))
+        self.text_current_score_val = self.current_score_val.render(str(self.stats.score) ,True ,(255, 255, 255))
+        self.text_high_score = self.high_score.render("High Score:" , True , (255, 0, 136))
+        self.text_high_score_val = self.high_score_val.render(self.stats.get_highest_score() ,True ,(255, 255, 255))
+        
         #Blits
         self.setting.screen.blit(self.text_game_over ,(self.setting.screen_rect.centerx -300 , self.setting.screen_rect.centery -300))
         self.setting.screen.blit(self.text_current_score ,(self.setting.screen_rect.centerx -150 , self.setting.screen_rect.centery -150))
         self.setting.screen.blit(self.text_high_score ,(self.setting.screen_rect.centerx -150 , self.setting.screen_rect.centery -100))
         self.setting.screen.blit(self.text_current_score_val ,(self.setting.screen_rect.centerx +100 , self.setting.screen_rect.centery -150))
-        self.setting.screen.blit(self.text_high_score_val ,( self.setting.screen_rect.centerx +100 , self.setting.screen_rect.centery -100 ))
+        self.setting.screen.blit(self.text_high_score_val ,( self.setting.screen_rect.centerx +45 , self.setting.screen_rect.centery -100 ))
     
 
     def KEYDOWN_events(self, event):

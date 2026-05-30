@@ -1,6 +1,6 @@
 import pygame 
 class Button():
-    def __init__(self, game , x, y , width , height ,label , font_colour = (255,0,0) , bg_colour = (0, 54, 255) ):
+    def __init__(self, game , x, y , width , height ,label , font_colour = (255, 255, 255)  , bg_colour = (180, 0, 255) ):
         self.screen = game.setting.screen
         self.setting = game.setting
         
