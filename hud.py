@@ -17,7 +17,7 @@ class HUD():
         score_str = str(self.stats.score)
         self.score_image = self.font.render(score_str , True, self.text_colour,(0,0,0))
 
-        #Display score 
+        #Set score to be displayed 
         self.score_rect = self.score_image.get_rect()
         self.score_rect.right = self.screen_rect.right - 20 
         self.score_rect.top = 20 
@@ -26,4 +26,8 @@ class HUD():
         """Draw score to the screen"""
         self.screen.blit(self.score_image , self.score_rect)
  
+    def write_score_to_file(self):
+        with open("scores.txt", "a") as file:
+            file.write(str(self.stats.score) + "\n")
+
 

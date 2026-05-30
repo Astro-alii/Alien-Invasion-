@@ -33,14 +33,15 @@ class Alien_Invasion ():
         #aliens object and sprite object 
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
-        #Simulating levelling
-        self.current_level = 1
 
         #Fps controller
         self.clock = pygame.time.Clock()
+        #Game start - stop flags       
         self.game_start= False
         self.game_end = False  
         
+        #Score save flag 
+        self.score_saved = False
 
     def run (self):
         """Main function to execute game flow"""
@@ -83,10 +84,25 @@ class Alien_Invasion ():
         """Creates the end page when player runs out of ships"""
         self.play_again_button.draw()
         self.quit_button.draw()
-        self.heading_game = pygame.font.SysFont (None , 150)
-        self.heading_over = pygame.font.SysFont (None ,150)
-        self.text_game = self.heading_game.render("Game Over!" , True , (110,0,217))
-        self.setting.screen.blit(self.text_game ,(self.setting.screen_rect.centerx -300 , self.setting.screen_rect.centery -300))
+        #Font initialization
+        self.heading_game_over = pygame.font.SysFont (None , 150)
+        self.high_score = pygame.font.SysFont(None , 50)
+        self.current_score = pygame.font.SysFont (None , 50)       
+        self.high_score_val = pygame.font.SysFont(None , 50)
+        self.current_score_val = pygame.font.SysFont(None , 50)
+      
+        #Text renders
+        self.text_game_over = self.heading_game_over.render("Game Over!" , True , (110,0,217))
+        self.text_current_score = self.current_score.render ("Current Score" ,True , (255, 0, 136))
+        self.text_high_score = self.high_score.render("High Score" , True , (255, 0, 136))
+        self.text_high_score_val = self.high_score_val.render(self.stats.get_highest_score() ,True ,(255, 0, 136))
+        self.text_current_score_val = self.current_score_val.render(str(self.stats.score) ,True ,(255, 0, 136))
+        #Blits
+        self.setting.screen.blit(self.text_game_over ,(self.setting.screen_rect.centerx -300 , self.setting.screen_rect.centery -300))
+        self.setting.screen.blit(self.text_current_score ,(self.setting.screen_rect.centerx -150 , self.setting.screen_rect.centery -150))
+        self.setting.screen.blit(self.text_high_score ,(self.setting.screen_rect.centerx -150 , self.setting.screen_rect.centery -100))
+        self.setting.screen.blit(self.text_current_score_val ,(self.setting.screen_rect.centerx +100 , self.setting.screen_rect.centery -150))
+        self.setting.screen.blit(self.text_high_score_val ,( self.setting.screen_rect.centerx +100 , self.setting.screen_rect.centery -100 ))
     
 
     def KEYDOWN_events(self, event):
@@ -213,7 +229,9 @@ class Alien_Invasion ():
         self._check_alien_bullet_collision()
         if len(self.aliens) <= 0:
             self.setting.new_level_settings()
+            self.score_saved = False
             self._create_fleet()
+
 
 
     def _update_powerstrike(self):
@@ -248,7 +266,6 @@ class Alien_Invasion ():
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             if self.setting.ship_limit > 0 :
                  self._ship_hit() 
-             
             else:
                 self.game_start= False
                 self.game_end = True
@@ -259,7 +276,12 @@ class Alien_Invasion ():
             if alien.rect.bottom >= self.setting.screen_rect.bottom and self.setting.ship_limit:
                 self._ship_hit()
                 break
-     
+    def _save_score(self):
+        """Saves score once per game session"""
+        if not self.score_saved:
+                self.hud.write_score_to_file()
+                self.score_saved  = True
+
     def _initialize_game_startup (self):
         """Initilizes game to play again"""
         self.aliens.empty()
@@ -284,6 +306,7 @@ class Alien_Invasion ():
                 self.setting.screen.blit(powerstrike.image , powerstrike.rect)
             self.hud.show_score()
         elif self.game_end and not self.game_start:
+            self._save_score()
             self._create_end_page()
         
         
