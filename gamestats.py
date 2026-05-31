@@ -3,12 +3,13 @@
 class Gamestats ():
     def __init__(self, game):
         self.setting = game.setting
+        self.game = game
         self.reset_stats()
         
     def reset_stats(self):
         self.ship_left = self.setting.ship_limit 
         self.score = 0
-
+        self.lifeline = self.game.hud.original_width
     def get_highest_score (self):
         self.highest_score = 0 
         with open("scores.txt" , "r") as file:

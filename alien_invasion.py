@@ -13,6 +13,8 @@ class Alien_Invasion ():
     def __init__ (self):
         pygame.init()
         self.setting = Settings(self)
+        #HUD display object
+        self.hud = HUD (self)
         #Gamestats object 
         self.stats = Gamestats(self)
         #Button objects - Front Page 
@@ -21,7 +23,7 @@ class Alien_Invasion ():
         #Button objects - Last page
         self.play_again_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery, 200, 75, "Play Again")
         #HUD display object
-        self.hud = HUD (self)
+        #self.hud = HUD (self)
         #font object
         self.font = pygame.font.SysFont(None, 48)
         #Ship object 
@@ -304,6 +306,7 @@ class Alien_Invasion ():
             for powerstrike in self.powerstrikes:
                 self.setting.screen.blit(powerstrike.image , powerstrike.rect)
             self.hud.show_score()
+            self.hud.show_lifeline()
         elif self.game_end and not self.game_start:
             self._save_score()
             self._create_end_page()
