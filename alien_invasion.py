@@ -12,7 +12,20 @@ from time import sleep
 class Alien_Invasion ():
     def __init__ (self):
         pygame.init()
+        pygame.mixer.init()
+    
+        # Load sound effects
+        self.bullet_sound = pygame.mixer.Sound("Sounds/bullet.wav")
+        self.powerstrike_sound = pygame.mixer.Sound("Sounds/powerstrike.wav")
+        self.game_start_sound = pygame.mixer.Sound("Sounds/start.wav")
+        self.game_over_sound = pygame.mixer.Sound("Sounds/game_over.wav")
+        
+        # Load background music 
+        pygame.mixer.music.load("Sounds/Bg.mp3")
+        pygame.mixer.music.set_volume(0.3)  # 30% volume
+       
         self.setting = Settings(self)
+       
         #HUD display object
         self.hud = HUD (self)
         #Gamestats object 
@@ -47,8 +60,10 @@ class Alien_Invasion ():
 
     def run (self):
         """Main function to execute game flow"""
+        pygame.mixer.music.play(-1)
         running = True
         while running:
+            
             self._check_event() 
             if self.game_start:
                 self.ship.update()    
@@ -120,10 +135,12 @@ class Alien_Invasion ():
              if len(self.powerstrikes) < self.setting.ps_allowed:
                 ps_shot = Powerstrike(self)
                 self.powerstrikes.add(ps_shot)
+                self.powerstrike_sound.play()
         if event.key == pygame.K_SPACE:
             if len(self.bullets) < self.setting.bullets_allowed:
                 bullet_shot = bullet.Bullet(self)
                 self.bullets.add(bullet_shot)
+                self.bullet_sound.play()
         if event.key == pygame.K_q:
             sys.exit()
 
@@ -144,10 +161,12 @@ class Alien_Invasion ():
         if event.button == 1:
             if self.play_button.get_clicked(event) :
                 self.game_start= True
+                self.game_start_sound.play()
                # pygame.mouse.set_visible(False)
             if self.play_again_button.get_clicked(event):
                 self.game_start = True
                 self.game_end = False
+                self.game_start_sound.play()
                 self._initialize_game_startup()
                 self.hud.prep_score()
             if self.quit_button.get_clicked(event) and not self.game_start:
@@ -223,6 +242,7 @@ class Alien_Invasion ():
         else: 
             self.game_start = False
             self.game_end = True
+            self.game_over_sound.play()
 
         
     def _update_bullet(self):
