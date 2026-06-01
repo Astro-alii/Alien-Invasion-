@@ -24,6 +24,7 @@ class Ship ():
 
 
     def update (self):
+        """Updates the Rect coordinates of Ship"""
         if self.moving_right:
             if not self.rect.right >= self.screen_rect.right:
                 self.rect.centerx += 3
@@ -36,7 +37,11 @@ class Ship ():
         if self.moving_up:
             if not self.rect.top <= self.screen_rect.top:
                 self.rect.y -=3
-    
+    def get_damaged(self):
+        """Reduces lifeline when alien hits ship"""
+        self.game.stats.lifeline -= 25 * self.game.hud.original_width / 100
+
     def reset_ship(self):
+        """Resets ship's position to screen midbottom"""
         self.rect.midbottom = self.screen_rect.midbottom
         self.x = float (self.rect.x)

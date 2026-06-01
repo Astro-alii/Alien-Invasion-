@@ -207,8 +207,12 @@ class Alien_Invasion ():
 
     def _ship_hit (self):
         """Initilizes game when ship is hit"""
-        if self.stats.ship_left > 1:
-            self.stats.ship_left -= 1 
+        if self.stats.lifeline > 25 * (self.hud.original_width / 100): 
+            print (self.stats.lifeline)
+            self.ship.get_damaged()
+            self.hud.prep_lifeline() 
+
+            
 
             self.aliens.empty()
             self.bullets.empty()

@@ -16,6 +16,7 @@ class HUD():
         self.image_filled_bar_rect = self.image_filled_bar.get_rect()
         self.original_width = self.image_filled_bar_rect.width # Equal the original lifeline
         self.original_height = self.image_filled_bar_rect.height
+        self.hp_bar_reduced = pygame.transform.scale(self.image_filled_bar, (self.original_width, self.original_height))
         self.image_filled_bar_rect.topleft = self.screen_rect.topleft
 
         #Empty bar
@@ -32,7 +33,7 @@ class HUD():
 
     def prep_lifeline(self):
         """Prepares the lifeline bar to be displayed on screen"""
-        self.hp_bar_reduced = pygame.transform.scale(self.image_filled_bar, (self.original_width , self.original_height))
+        self.hp_bar_reduced = pygame.transform.scale(self.image_filled_bar, (self.game.stats.lifeline , self.original_height))
 
     def prep_score(self):
         """Initilizes and renders score to be displayed on screen"""
@@ -44,7 +45,7 @@ class HUD():
     def show_lifeline (self):
         """Displays lifeline bar on screen"""
         self.screen.blit(self.image_empty_bar , self.image_empty_bar_rect)
-        self.screen.blit(self.image_filled_bar, self.image_filled_bar_rect)
+        self.screen.blit(self.hp_bar_reduced, self.image_filled_bar_rect)
         self.screen.blit(self.image_heart_icon,self.image_heart_icon_rect)
     
     def show_score(self):
