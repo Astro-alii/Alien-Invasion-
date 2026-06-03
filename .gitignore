@@ -2,3 +2,8 @@ __pycache__/
 *.pyc 
 .DS_store
 scores.txt
+.venv/
+venv/
+__pycache__/
+*.pyc
+.vscode/
