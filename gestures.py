@@ -4,6 +4,7 @@ import threading
 
 class Gestures:
     def __init__(self, game):
+        self.game = game
         self.capture = cv2.VideoCapture(0)
         self.detector = HandDetector(0.8, 2)
         self.detection_on = True
@@ -17,6 +18,7 @@ class Gestures:
         self.thread = threading.Thread(target=self._detection_loop, daemon=True)
         self.thread.start()
 
+    
     def _detection_loop(self):
         """Runs continuously in background"""
         while self.detection_on:
@@ -45,9 +47,9 @@ class Gestures:
             self.left_hand = self.hands[0]
         if len(self.hands)>= 2:
             self.right_hand = self.hands[1]
-            
-        
 
+        
+        
     def index_finger_up_sensor(self):
         """Senses Index finger for bullet fire"""
         if not hasattr(self, "left_hand"):
@@ -63,7 +65,21 @@ class Gestures:
         left_fingers = self.detector.fingersUp(self.left_hand)
         if left_fingers == [1,1,1,1,1]:
             return True
-        
+    
+    def horizontal_movement_sensor(self):
+        """Detects the horizntal movement of ship"""
+        self.currentx = self.game.ship.rect.centerx
+        hand_centerx , hand_centery =  self.left_hand["center"]
+        self.currentx = hand_centerx
+        self.game.ship.rect.centerx = self.currentx
+
+    def vertical_movement_sensor(self):
+        """Detects the horizntal movement of ship"""
+        self.currenty = self.game.ship.rect.centery
+        hand_centerx , hand_centery =  self.left_hand["center"]
+        self.currenty = hand_centery
+        self.game.ship.rect.centery = self.currenty
+
 
 
             

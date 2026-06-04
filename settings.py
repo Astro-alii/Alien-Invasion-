@@ -3,6 +3,7 @@ import sys
 class Settings():
     def __init__(self, game):
         #screen_settings
+        self.game = game
         self.screen = pygame.display.set_mode((1000,800))
         self.screen_rect = self.screen.get_rect()
         self.width = self.screen.get_rect().width

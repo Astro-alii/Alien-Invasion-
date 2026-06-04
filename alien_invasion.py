@@ -71,13 +71,12 @@ class Alien_Invasion ():
         while running:
             self._check_event() 
             if self.game_start:
-                self.gesture.camera_screen_on()
-                self.ship.update()    
+                self.gesture.camera_screen_on()    
                 self._update_bullet()
                 self._update_powerstrike()
                 self._update_alien()
             self._update_screen()
-            self.clock.tick(60) # Controls frames rate per second 
+            self.clock.tick(120) # Controls frames rate per second 
 
 
     def _check_event (self):
@@ -92,16 +91,27 @@ class Alien_Invasion ():
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     self._KEYDOWN_events(event)
-            if self.gesture.index_finger_up_sensor():
-                if len(self.bullets) < self.setting.bullets_allowed:
-                    bullet_shot = bullet.Bullet(self)
-                    self.bullets.add(bullet_shot)
-                    self.bullet_sound.play()
-            if self.gesture.all_finger_up_sensor():
-                 if len(self.powerstrikes) < self.setting.ps_allowed:
-                    ps_shot = Powerstrike(self)
-                    self.powerstrikes.add(ps_shot)
-                    self.powerstrike_sound.play()
+            self._shoot_bullet()
+            self._shoot_powerstrike()
+            self._update_movement()
+    
+    def _shoot_bullet(self):
+        if self.gesture.index_finger_up_sensor():
+            if len(self.bullets) < self.setting.bullets_allowed:
+                bullet_shot = bullet.Bullet(self)
+                self.bullets.add(bullet_shot)
+                self.bullet_sound.play()
+
+    def _shoot_powerstrike(self):
+        if self.gesture.all_finger_up_sensor():
+            if len(self.powerstrikes) < self.setting.ps_allowed:
+                ps_shot = Powerstrike(self)
+                self.powerstrikes.add(ps_shot)
+                self.powerstrike_sound.play()
+    
+    def _update_movement(self):
+        self.gesture.horizontal_movement_sensor()
+        self.gesture.vertical_movement_sensor()
 
     def _create_intro_page(self):
         """Creates the Intro page for Alien Invasion"""
