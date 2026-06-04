@@ -11,7 +11,7 @@ class Ship ():
         
 
         self.ship = pygame.image.load("Images/starship.bmp")
-        self.ship = pygame.transform.scale(self.ship , (100 , 100 ))
+        self.ship = pygame.transform.scale(self.ship , (50 , 50 ))
         self.rect = self.ship.get_rect()
 
         self.x = float(self.rect.x)

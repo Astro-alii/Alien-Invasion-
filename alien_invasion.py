@@ -63,6 +63,7 @@ class Alien_Invasion ():
         #Score save flag 
         self.score_saved = False
 
+
     def run (self):
         """Main function to execute game flow"""
         pygame.mixer.music.play(-1)
@@ -70,25 +71,27 @@ class Alien_Invasion ():
         while running:
             self._check_event() 
             if self.game_start:
-                self.gesture.detect_gesture()
-                self.gesture.set_hand_detection()
+                self.gesture.camera_screen_on()
                 self.ship.update()    
                 self._update_bullet()
                 self._update_powerstrike()
                 self._update_alien()
             self._update_screen()
-            self.clock.tick(120) # Controls frames rate per second 
+            self.clock.tick(60) # Controls frames rate per second 
 
 
     def _check_event (self):
         """Identify type of event"""
         if not self.game_start:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    self._KEYDOWN_events(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.MOUSEBUTTONDOWN_events(event)
         else:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    self._KEYDOWN_events(event)
             if self.gesture.index_finger_up_sensor():
                 if len(self.bullets) < self.setting.bullets_allowed:
                     bullet_shot = bullet.Bullet(self)
@@ -104,10 +107,11 @@ class Alien_Invasion ():
         """Creates the Intro page for Alien Invasion"""
         self.play_button.draw()
         self.quit_button.draw()
+        #Alien invasion heading 
         self.heading_alien  = pygame.font.SysFont("ariel", 150)
         self.text_alien_invasion = self.heading_alien.render("Alien Invasion", True , (0, 195, 255))
         self.setting.screen.blit(self.text_alien_invasion , (self.setting.screen_rect.centerx -350, self.setting.screen_rect.centery - 200))
-       
+        #ADD GESTURE CONTROL MODE info box here 
 
     def _create_end_page (self):
         """Creates the end page when player runs out of ships"""
@@ -135,7 +139,7 @@ class Alien_Invasion ():
         self.setting.screen.blit(self.text_high_score_val ,( self.setting.screen_rect.centerx +45 , self.setting.screen_rect.centery -100 ))
     
 
-    def KEYDOWN_events(self, event):
+    def _KEYDOWN_events(self, event):
         """Button press response"""
         if event.key == pygame.K_q:
             sys.exit()
