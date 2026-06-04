@@ -1,9 +1,10 @@
 __pycache__/
-*.pyc 
+*.pyc
 .DS_store
 scores.txt
 .venv/
 venv/
-__pycache__/
-*.pyc
 .vscode/
+settings.json
+Images/hp_original.gif
+.gitignore

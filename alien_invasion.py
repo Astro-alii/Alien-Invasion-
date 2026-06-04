@@ -1,5 +1,7 @@
 import sys
-import pygame 
+import pygame
+import cv2
+from cvzone.HandTrackingModule import HandDetector 
 import ship 
 from button import Button
 from settings import Settings
@@ -7,6 +9,7 @@ import bullet
 from alien import Alien 
 from powerstrike import Powerstrike
 from gamestats import Gamestats
+import gestures
 from hud import HUD
 from time import sleep
 class Alien_Invasion ():
@@ -25,6 +28,8 @@ class Alien_Invasion ():
         pygame.mixer.music.set_volume(0.3)  # 30% volume
        
         self.setting = Settings(self)
+
+        self.gesture = gestures.Gestures(self)
        
         #HUD display object
         self.hud = HUD (self)
@@ -35,8 +40,8 @@ class Alien_Invasion ():
         self.quit_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery +100 , 200 , 75 , "Quit")
         #Button objects - Last page
         self.play_again_button = Button(self, self.setting.screen_rect.centerx - 100, self.setting.screen_rect.centery, 200, 75, "Play Again")
-        #HUD display object
-        #self.hud = HUD (self)
+        
+    
         #font object
         self.font = pygame.font.SysFont(None, 48)
         #Ship object 
@@ -54,7 +59,7 @@ class Alien_Invasion ():
         #Game start - stop flags       
         self.game_start= False
         self.game_end = False  
-        
+    
         #Score save flag 
         self.score_saved = False
 
@@ -63,9 +68,10 @@ class Alien_Invasion ():
         pygame.mixer.music.play(-1)
         running = True
         while running:
-            
             self._check_event() 
             if self.game_start:
+                self.gesture.detect_gesture()
+                self.gesture.set_hand_detection()
                 self.ship.update()    
                 self._update_bullet()
                 self._update_powerstrike()
@@ -76,15 +82,23 @@ class Alien_Invasion ():
 
     def _check_event (self):
         """Identify type of event"""
-        for event in pygame.event.get():
+        if not self.game_start:
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.MOUSEBUTTONDOWN_events(event)
-                elif event.type == pygame.KEYDOWN:
-                    self.KEYDOWN_events(event)
-                elif event.type == pygame.KEYUP:
-                    self.KEYUP_events(event)
+        else:
+            if self.gesture.index_finger_up_sensor():
+                if len(self.bullets) < self.setting.bullets_allowed:
+                    bullet_shot = bullet.Bullet(self)
+                    self.bullets.add(bullet_shot)
+                    self.bullet_sound.play()
+            if self.gesture.all_finger_up_sensor():
+                 if len(self.powerstrikes) < self.setting.ps_allowed:
+                    ps_shot = Powerstrike(self)
+                    self.powerstrikes.add(ps_shot)
+                    self.powerstrike_sound.play()
 
     def _create_intro_page(self):
         """Creates the Intro page for Alien Invasion"""
@@ -123,38 +137,10 @@ class Alien_Invasion ():
 
     def KEYDOWN_events(self, event):
         """Button press response"""
-        if event.key == pygame.K_UP:
-            self.ship.moving_up = True
-        if event.key == pygame.K_DOWN:
-            self.ship.moving_down = True 
-        if event.key == pygame.K_LEFT:
-            self.ship.moving_left = True 
-        if event.key == pygame.K_RIGHT:
-            self.ship.moving_right = True
-        if event.key == pygame.K_z:
-             if len(self.powerstrikes) < self.setting.ps_allowed:
-                ps_shot = Powerstrike(self)
-                self.powerstrikes.add(ps_shot)
-                self.powerstrike_sound.play()
-        if event.key == pygame.K_SPACE:
-            if len(self.bullets) < self.setting.bullets_allowed:
-                bullet_shot = bullet.Bullet(self)
-                self.bullets.add(bullet_shot)
-                self.bullet_sound.play()
         if event.key == pygame.K_q:
             sys.exit()
 
 
-    def KEYUP_events (self, event):
-        """Button release response"""
-        if event.key == pygame.K_UP:
-            self.ship.moving_up = False
-        if event.key == pygame.K_DOWN:
-            self.ship.moving_down = False
-        if event.key == pygame.K_LEFT:
-            self.ship.moving_left = False
-        if event.key == pygame.K_RIGHT:
-            self.ship.moving_right = False
 
     def MOUSEBUTTONDOWN_events(self,event):
         """Mouse click response"""
@@ -332,6 +318,7 @@ class Alien_Invasion ():
             self.hud.show_score()
             self.hud.show_lifeline()
         elif self.game_end and not self.game_start:
+            self.gesture.close_detection()
             self._save_score()
             self._create_end_page()
         
