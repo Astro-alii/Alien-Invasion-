@@ -219,7 +219,7 @@ class Alien_Invasion ():
         """Moves the alien to right"""
         self._check_fleet_edges()
         self.aliens.update()
-        self._check_alien_bullet_collision
+        self._check_alien_bullet_collision()
         self._check_alien_ship_collision()
         self._check_alien_bottom() 
 
@@ -231,7 +231,6 @@ class Alien_Invasion ():
             self.ship.get_damaged()
             self.hud.prep_lifeline() 
 
-            
 
             self.aliens.empty()
             self.bullets.empty()
@@ -309,11 +308,13 @@ class Alien_Invasion ():
 
     def _initialize_game_startup (self):
         """Initilizes game to play again"""
+        
         self.aliens.empty()
         self.bullets.empty()
         self.powerstrikes.empty()
         self.ship.rect.midbottom = self.setting.screen_rect.midbottom
         self.stats.reset_stats()
+        self.gesture._initialize_camera()
         self.setting.initialize_settings()
     
     def _update_screen (self): 
