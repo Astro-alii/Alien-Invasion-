@@ -67,7 +67,7 @@ python alien_invasion.py
 ## Installation
 
 ### Prerequisites
-- Python 3.8+
+- **Python 3.11** (required — mediapipe does not support Python 3.12+)
 - Webcam (required for gesture-control branch)
 
 ### Setup
@@ -78,9 +78,9 @@ python alien_invasion.py
    cd Alien\ Invasion
    ```
 
-2. **Create a virtual environment**
+2. **Create a virtual environment with Python 3.11**
    ```bash
-   python3 -m venv .venv
+   python3.11 -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
@@ -89,11 +89,20 @@ python alien_invasion.py
    pip install -r requirements.txt
    ```
 
-### Dependencies
-- **pygame** (2.6.0): Game engine and rendering
-- **opencv-python** (4.10.0.84): Computer vision for gesture control
-- **mediapipe** (0.10.9): Hand tracking ML model
-- **cvzone** (1.6.1): Hand detection wrapper
+### Requirements
+
+A `requirements.txt` file is provided. Install all dependencies via:
+
+```bash
+pip install -r requirements.txt
+```
+
+| Package | Version |
+|---|---|
+| pygame | 2.6.0 |
+| opencv-python | 4.10.0.84 |
+| mediapipe | 0.10.14 |
+| cvzone | 1.6.1 |
 
 ## How to Play
 
@@ -147,6 +156,8 @@ python alien_invasion.py
 - Hand detection via cvzone + MediaPipe
 - Background thread for non-blocking detection
 - Gesture recognition (finger positions)
+- `_ensure_initialized()` guard prevents premature sensor access
+- Safe `fingersUp()` calls with null checks and try/except to handle race conditions between the detection thread and main game thread
 - Camera feed management
 
 **settings.py** - Game configuration
@@ -204,6 +215,8 @@ Alien Invasion/
 - Finger configurations detected for different actions:
   - `[0,1,0,0,0]`: Index finger up (shoot)
   - `[1,1,1,1,1]`: All fingers up (powerstrike)
+- All sensor methods call `_ensure_initialized()` before accessing the detector
+- `fingersUp()` is guarded with `hasattr` checks and wrapped in `try/except (AttributeError, IndexError)` to prevent crashes when the background thread hasn't finished populating `results` yet
 
 ### Performance Considerations
 - 120 FPS target frame rate
@@ -235,11 +248,13 @@ Alien Invasion/
 - **Hand not detected**: Ensure good lighting and clear hand visibility
 - **Jerky movement**: Camera may be slow; try reducing detection window or closing other apps
 - **Performance issues**: Lower gesture detection resolution or check system CPU usage
+- **`AttributeError: 'HandDetector' object has no attribute 'results'`**: Ensure you are using **Python 3.11** and the exact dependency versions in `requirements.txt`. This error occurs due to a race condition between the detection thread and the main thread; the current codebase handles this with null guards and try/except in `gestures.py`.
 
 ### General Issues
 - **Assets not loading**: Ensure Images/ and Sounds/ directories exist with required files
 - **Game crashes**: Verify all dependencies installed correctly with `pip install -r requirements.txt`
 - **Import errors**: Activate virtual environment with `source .venv/bin/activate`
+- **mediapipe install fails**: Make sure you are using Python 3.11 — mediapipe does not support Python 3.12 or later
 
 ## License
 
